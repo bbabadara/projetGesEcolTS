@@ -12,3 +12,8 @@ export function listerCours() {
   console.log("\n===== Liste des Cours =====");
   console.table(coursList);
 }
+
+
+export function checkCours(id: number) : boolean {
+  return coursList.some((c) => c.id === id);
+}

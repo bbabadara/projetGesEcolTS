@@ -1,7 +1,7 @@
 import { ajouterEtudiant, listerEtudiants } from "./services/EtudiantService";
-import { ajouterClasse, listerClasses } from "./services/ClasseService";
-import { ajouterFiliere, listerFilieres } from "./services/FiliereService";
-import { ajouterNiveau, listerNiveaux } from "./services/NiveauService";
+import { ajouterClasse, listerClasses,checkClasse } from "./services/ClasseService";
+import {ajouterFiliere, listerFilieres,checkFiliere, } from "./services/FiliereService";
+import { ajouterNiveau, listerNiveaux,checkNiveau , checkLibelleNiveau} from "./services/NiveauService";
 import { ajouterCours, listerCours } from "./services/CoursService";
 import { askQuestion } from "../src/utils/readlineUtils"; 
 
@@ -28,6 +28,12 @@ async function afficherMenu() {
       const adresse = await askQuestion("Adresse : ");
       const dateNaissance = await askQuestion("Date de naissance (YYYY-MM-DD) : ");
       const idClasse = await askQuestion("ID de la classe : ");
+      const checkClasse = checkClasse(Number(idClasse));
+      if (!checkClasse) {
+        console.log("Classe inexistante! Créer la d'abord");
+        return;
+      }
+      //ajoute l'etudiant
       ajouterEtudiant({ id: 0, nom, prenom, adresse, dateNaissance: new Date(dateNaissance), idClasse: Number(idClasse) });
       break;
 
@@ -38,7 +44,18 @@ async function afficherMenu() {
     case "3":
       const nomClasse = await askQuestion("Nom de la classe : ");
       const idFiliere = await askQuestion("ID de la filière : ");
+      const checkF = checkFiliere(Number(idFiliere));
+      if (!checkF) {
+        console.log("Filière inexistante! Créer la d'abord");
+        return;
+      }
       const idNiveau = await askQuestion("ID du niveau : ");
+      const niveauExistant = checkNiveau(Number(idNiveau));
+      if (!niveauExistant) {
+        console.log("Niveau inexistant! Créer le d'abord");
+        return;
+      }
+      
       ajouterClasse({ id: 0, nom: nomClasse, idFiliere: Number(idFiliere), idNiveau: Number(idNiveau) });
       break;
 
@@ -57,6 +74,11 @@ async function afficherMenu() {
 
     case "7":
       const libelleNiveau = await askQuestion("Libellé du niveau : ");
+      const checkLibelleN = checkLibelleNiveau(libelleNiveau);
+      if (checkLibelleN) {
+        console.log("Niveau déjà existant!");
+        return;
+      }
       ajouterNiveau({ id: 0, libelle: libelleNiveau });
       break;
 
@@ -69,6 +91,11 @@ async function afficherMenu() {
       const heureDebut = await askQuestion("Heure de début : ");
       const heureFin = await askQuestion("Heure de fin : ");
       const idClasseCours = await askQuestion("ID de la classe : ");
+      const checkC = checkClasse(Number(idClasseCours));
+      if (!checkC) {
+        console.log("Classe inexistante! Créer la d'abord");
+        return;
+      }
       ajouterCours({ id: 0, date: new Date(dateCours), heureDebut, heureFin, idClasse: Number(idClasseCours) });
       break;
 
@@ -78,6 +105,7 @@ async function afficherMenu() {
 
     case "0":
       console.log("Fermeture du programme.");
+
       return; 
 
     default:

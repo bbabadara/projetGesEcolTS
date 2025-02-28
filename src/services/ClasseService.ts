@@ -1,6 +1,6 @@
 import { Classe } from "../interfaces/Classe";
 
-const classes: Classe[] = [];
+export const classes: Classe[] = [];
 
 export function ajouterClasse(classe: Classe) {
   classe.id = classes.length + 1;
@@ -11,4 +11,9 @@ export function ajouterClasse(classe: Classe) {
 export function listerClasses() {
   console.log("\n===== Liste des Classes =====");
   console.table(classes);
+}
+
+
+export function checkClasse(id: number) : boolean {
+  return classes.some((c) => c.id === id);
 }
