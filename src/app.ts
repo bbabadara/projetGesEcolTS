@@ -1,16 +1,11 @@
-import * as readline from "readline";
 import { ajouterEtudiant, listerEtudiants } from "./services/EtudiantService";
 import { ajouterClasse, listerClasses } from "./services/ClasseService";
 import { ajouterFiliere, listerFilieres } from "./services/FiliereService";
 import { ajouterNiveau, listerNiveaux } from "./services/NiveauService";
 import { ajouterCours, listerCours } from "./services/CoursService";
+import { askQuestion } from "../src/utils/readlineUtils"; 
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-function afficherMenu() {
+async function afficherMenu() {
   console.log("\n===== MENU =====");
   console.log("1. Ajouter un étudiant");
   console.log("2. Lister les étudiants");
@@ -23,85 +18,73 @@ function afficherMenu() {
   console.log("9. Ajouter un cours");
   console.log("10. Lister les cours");
   console.log("0. Quitter");
-  rl.question("Choisissez une option : ", (choix) => {
-    switch (choix) {
-      case "1":
-        rl.question("Nom : ", (nom) => {
-          rl.question("Prénom : ", (prenom) => {
-            rl.question("Adresse : ", (adresse) => {
-              rl.question("Date de naissance (YYYY-MM-DD) : ", (dateNaissance) => {
-                rl.question("ID de la classe : ", (idClasse) => {
-                  ajouterEtudiant({ id: 0, nom, prenom, adresse, dateNaissance:new Date(dateNaissance), idClasse: Number(idClasse) });
-                  afficherMenu();
-                });
-              });
-            });
-          });
-        });
-        break;
-      case "2":
-        listerEtudiants();
-        afficherMenu();
-        break;
-      case "3":
-        rl.question("Nom de la classe : ", (nom) => {
-          rl.question("ID de la filière : ", (idFiliere) => {
-            rl.question("ID du niveau : ", (idNiveau) => {
-              ajouterClasse({ id: 0, nom, idFiliere: Number(idFiliere), idNiveau: Number(idNiveau) });
-              afficherMenu();
-            });
-          });
-        });
-        break;
-      case "4":
-        listerClasses();
-        afficherMenu();
-        break;
-      case "5":
-        rl.question("Libellé de la filière : ", (libelle) => {
-          ajouterFiliere({ id: 0, libelle });
-          afficherMenu();
-        });
-        break;
-      case "6":
-        listerFilieres();
-        afficherMenu();
-        break;
-      case "7":
-        rl.question("Libellé du niveau : ", (libelle) => {
-          ajouterNiveau({ id: 0, libelle });
-          afficherMenu();
-        });
-        break;
-      case "8":
-        listerNiveaux();
-        afficherMenu();
-        break;
-      case "9":
-        rl.question("Date du cours : ", (date) => {
-          rl.question("Heure de début : ", (heureDebut) => {
-            rl.question("Heure de fin : ", (heureFin) => {
-              rl.question("ID de la classe : ", (idClasse) => {
-                ajouterCours({ id: 0, date:new Date(date), heureDebut, heureFin, idClasse: Number(idClasse) });
-                afficherMenu();
-              });
-            });
-          });
-        });
-        break;
-      case "10":
-        listerCours();
-        afficherMenu();
-        break;
-      case "0":
-        console.log("Fermeture du programme.");
-        rl.close();
-        break;
-      default:
-        console.log("Option invalide.");
-        afficherMenu();
-    }
-  });
+
+  const choix = await askQuestion("Choisissez une option : ");
+  
+  switch (choix) {
+    case "1":
+      const nom = await askQuestion("Nom : ");
+      const prenom = await askQuestion("Prénom : ");
+      const adresse = await askQuestion("Adresse : ");
+      const dateNaissance = await askQuestion("Date de naissance (YYYY-MM-DD) : ");
+      const idClasse = await askQuestion("ID de la classe : ");
+      ajouterEtudiant({ id: 0, nom, prenom, adresse, dateNaissance: new Date(dateNaissance), idClasse: Number(idClasse) });
+      break;
+
+    case "2":
+      listerEtudiants();
+      break;
+
+    case "3":
+      const nomClasse = await askQuestion("Nom de la classe : ");
+      const idFiliere = await askQuestion("ID de la filière : ");
+      const idNiveau = await askQuestion("ID du niveau : ");
+      ajouterClasse({ id: 0, nom: nomClasse, idFiliere: Number(idFiliere), idNiveau: Number(idNiveau) });
+      break;
+
+    case "4":
+      listerClasses();
+      break;
+
+    case "5":
+      const libelleFiliere = await askQuestion("Libellé de la filière : ");
+      ajouterFiliere({ id: 0, libelle: libelleFiliere });
+      break;
+
+    case "6":
+      listerFilieres();
+      break;
+
+    case "7":
+      const libelleNiveau = await askQuestion("Libellé du niveau : ");
+      ajouterNiveau({ id: 0, libelle: libelleNiveau });
+      break;
+
+    case "8":
+      listerNiveaux();
+      break;
+
+    case "9":
+      const dateCours = await askQuestion("Date du cours : ");
+      const heureDebut = await askQuestion("Heure de début : ");
+      const heureFin = await askQuestion("Heure de fin : ");
+      const idClasseCours = await askQuestion("ID de la classe : ");
+      ajouterCours({ id: 0, date: new Date(dateCours), heureDebut, heureFin, idClasse: Number(idClasseCours) });
+      break;
+
+    case "10":
+      listerCours();
+      break;
+
+    case "0":
+      console.log("Fermeture du programme.");
+      return; 
+
+    default:
+      console.log("Option invalide.");
+  }
+
+  afficherMenu(); 
 }
 
 afficherMenu();
